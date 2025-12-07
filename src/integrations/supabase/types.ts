@@ -14,7 +14,124 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      confessions: {
+        Row: {
+          content: string
+          created_at: string
+          downvotes: number
+          fingerprint: string
+          id: string
+          is_approved: boolean
+          tag: Database["public"]["Enums"]["confession_tag"]
+          upvotes: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          downvotes?: number
+          fingerprint: string
+          id?: string
+          is_approved?: boolean
+          tag?: Database["public"]["Enums"]["confession_tag"]
+          upvotes?: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          downvotes?: number
+          fingerprint?: string
+          id?: string
+          is_approved?: boolean
+          tag?: Database["public"]["Enums"]["confession_tag"]
+          upvotes?: number
+        }
+        Relationships: []
+      }
+      post_limits: {
+        Row: {
+          fingerprint: string
+          id: string
+          post_count: number
+          post_date: string
+        }
+        Insert: {
+          fingerprint: string
+          id?: string
+          post_count?: number
+          post_date?: string
+        }
+        Update: {
+          fingerprint?: string
+          id?: string
+          post_count?: number
+          post_date?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          confession_id: string
+          created_at: string
+          fingerprint: string
+          id: string
+          reason: string
+        }
+        Insert: {
+          confession_id: string
+          created_at?: string
+          fingerprint: string
+          id?: string
+          reason: string
+        }
+        Update: {
+          confession_id?: string
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      votes: {
+        Row: {
+          confession_id: string
+          created_at: string
+          fingerprint: string
+          id: string
+          vote_type: string
+        }
+        Insert: {
+          confession_id: string
+          created_at?: string
+          fingerprint: string
+          id?: string
+          vote_type: string
+        }
+        Update: {
+          confession_id?: string
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +140,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      confession_tag:
+        | "love"
+        | "regret"
+        | "secret"
+        | "funny"
+        | "work"
+        | "family"
+        | "friendship"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +275,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      confession_tag: [
+        "love",
+        "regret",
+        "secret",
+        "funny",
+        "work",
+        "family",
+        "friendship",
+        "other",
+      ],
+    },
   },
 } as const
