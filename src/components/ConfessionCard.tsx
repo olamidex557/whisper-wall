@@ -66,7 +66,7 @@ export function ConfessionCard({ confession, userVote }: ConfessionCardProps) {
     if (!reportReason.trim()) return;
     
     report.mutate(
-      { confessionId: confession.id, reason: reportReason },
+      { confessionId: confession.id, reason: reportReason, confessionContent: confession.content },
       {
         onSuccess: () => {
           setReportDialogOpen(false);
