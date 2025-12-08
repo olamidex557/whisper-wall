@@ -216,7 +216,7 @@ export function useReport() {
   const { fingerprint } = useFingerprint();
 
   return useMutation({
-    mutationFn: async ({ confessionId, reason }: { confessionId: string; reason: string }) => {
+    mutationFn: async ({ confessionId, reason, confessionContent }: { confessionId: string; reason: string; confessionContent: string }) => {
       if (!fingerprint) throw new Error('Unable to report');
 
       const { error } = await supabase.from('reports').insert({
@@ -226,6 +226,11 @@ export function useReport() {
       });
 
       if (error) throw error;
+
+      // Notify admins via edge function (fire and forget)
+      supabase.functions.invoke('notify-report', {
+        body: { confessionId, reason, confessionContent },
+      }).catch(err => console.error('Failed to send notification:', err));
     },
     onSuccess: () => {
       toast({
