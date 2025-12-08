@@ -22,12 +22,20 @@ export function ConfessionFeed() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<ConfessionTag | null>(null);
 
-  const { data: confessions, isLoading, error } = useConfessions(sortBy, searchQuery, tagFilter);
+  const { 
+    data, 
+    isLoading, 
+    error, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useConfessions(sortBy, searchQuery, tagFilter);
   const { data: userVotes } = useUserVotes();
+
+  const confessions = data?.pages.flat() ?? [];
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Query is already reactive
   };
 
   return (
@@ -113,7 +121,7 @@ export function ConfessionFeed() {
         <div className="text-center py-12 text-destructive">
           Failed to load confessions. Please try again.
         </div>
-      ) : confessions && confessions.length > 0 ? (
+      ) : confessions.length > 0 ? (
         <div className="space-y-4">
           {confessions.map((confession) => (
             <ConfessionCard
@@ -122,6 +130,26 @@ export function ConfessionFeed() {
               userVote={userVotes?.[confession.id]}
             />
           ))}
+          
+          {hasNextPage && (
+            <div className="flex justify-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="gap-2"
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  'Load More'
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-12 text-muted-foreground">

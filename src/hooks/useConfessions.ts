@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Confession, ConfessionTag, Vote } from '@/types/confession';
 import { useFingerprint } from './useFingerprint';
@@ -6,17 +6,17 @@ import { toast } from '@/hooks/use-toast';
 import { containsProfanity, isSpam, filterProfanity } from '@/lib/profanity';
 
 type SortType = 'trending' | 'newest';
+const PAGE_SIZE = 10;
 
 export function useConfessions(sortBy: SortType = 'newest', searchQuery: string = '', tagFilter: ConfessionTag | null = null) {
-  const { fingerprint } = useFingerprint();
-
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['confessions', sortBy, searchQuery, tagFilter],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('confessions')
         .select('*')
-        .eq('is_approved', true);
+        .eq('is_approved', true)
+        .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
 
       if (searchQuery) {
         query = query.ilike('content', `%${searchQuery}%`);
@@ -36,6 +36,10 @@ export function useConfessions(sortBy: SortType = 'newest', searchQuery: string 
 
       if (error) throw error;
       return data as Confession[];
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
   });
 }
