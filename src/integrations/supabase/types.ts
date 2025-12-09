@@ -68,6 +68,38 @@ export type Database = {
         }
         Relationships: []
       }
+      replies: {
+        Row: {
+          confession_id: string
+          content: string
+          created_at: string
+          fingerprint: string
+          id: string
+        }
+        Insert: {
+          confession_id: string
+          content: string
+          created_at?: string
+          fingerprint: string
+          id?: string
+        }
+        Update: {
+          confession_id?: string
+          content?: string
+          created_at?: string
+          fingerprint?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           confession_id: string
