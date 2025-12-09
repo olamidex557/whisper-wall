@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Confession, ConfessionTag, Vote } from '@/types/confession';
 import { useFingerprint } from './useFingerprint';
@@ -9,6 +10,29 @@ type SortType = 'trending' | 'newest';
 const PAGE_SIZE = 10;
 
 export function useConfessions(sortBy: SortType = 'newest', searchQuery: string = '', tagFilter: ConfessionTag | null = null) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('confessions-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'confessions',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['confessions'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useInfiniteQuery({
     queryKey: ['confessions', sortBy, searchQuery, tagFilter],
     queryFn: async ({ pageParam = 0 }) => {
