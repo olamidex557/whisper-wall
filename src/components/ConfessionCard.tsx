@@ -23,6 +23,7 @@ import { Confession, TAG_LABELS, TAG_COLORS } from '@/types/confession';
 import { useVote, useReport } from '@/hooks/useConfessions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { ReplySection } from './ReplySection';
 
 interface ConfessionCardProps {
   confession: Confession;
@@ -164,6 +165,8 @@ export function ConfessionCard({ confession, userVote }: ConfessionCardProps) {
               </DropdownMenu>
             </div>
           </div>
+
+          <ReplySection confessionId={confession.id} />
         </CardContent>
       </Card>
 
