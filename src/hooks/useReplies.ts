@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Reply } from '@/types/reply';
 import { useFingerprint } from './useFingerprint';
@@ -6,6 +7,30 @@ import { toast } from '@/hooks/use-toast';
 import { containsProfanity, isSpam, filterProfanity } from '@/lib/profanity';
 
 export function useReplies(confessionId: string) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`replies-${confessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'replies',
+          filter: `confession_id=eq.${confessionId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['replies', confessionId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [confessionId, queryClient]);
+
   return useQuery({
     queryKey: ['replies', confessionId],
     queryFn: async () => {
