@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Shield, Trash2, LogOut, ArrowLeft, Flag, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
+import { Shield, Trash2, LogOut, ArrowLeft, Flag, AlertTriangle, CheckCircle, Loader2, UserPlus, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -25,6 +26,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Confession, Report, TAG_LABELS } from '@/types/confession';
@@ -32,6 +42,12 @@ import { User } from '@supabase/supabase-js';
 
 interface ReportWithConfession extends Report {
   confessions: Confession | null;
+}
+
+interface AdminUser {
+  id: string;
+  user_id: string;
+  email: string;
 }
 
 export default function AdminDashboard() {
@@ -85,6 +101,9 @@ export default function AdminDashboard() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
+
   const { data: reports, isLoading: reportsLoading } = useQuery({
     queryKey: ['admin-reports'],
     queryFn: async () => {
@@ -100,6 +119,97 @@ export default function AdminDashboard() {
       return data as ReportWithConfession[];
     },
     enabled: isAdmin,
+  });
+
+  const { data: admins, isLoading: adminsLoading } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('id, user_id')
+        .eq('role', 'admin');
+
+      if (error) throw error;
+
+      // Get emails using the RPC function
+      const adminUsers: AdminUser[] = [];
+      for (const role of data) {
+        const { data: userEmail } = await supabase
+          .rpc('get_user_email_by_id', { user_id_input: role.user_id });
+        adminUsers.push({
+          id: role.id,
+          user_id: role.user_id,
+          email: userEmail || 'Unknown',
+        });
+      }
+      return adminUsers;
+    },
+    enabled: isAdmin,
+  });
+
+  const addAdmin = useMutation({
+    mutationFn: async (email: string) => {
+      // First, find the user by email in auth.users
+      const { data: userId, error: searchError } = await supabase
+        .rpc('get_user_id_by_email', { email_input: email }) as { data: string | null; error: Error | null };
+
+      if (searchError || !userId) {
+        throw new Error('User not found. They must sign up first.');
+      }
+
+      // Check if already admin
+      const { data: existing } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (existing) {
+        throw new Error('User is already an admin.');
+      }
+
+      // Add admin role
+      const { error } = await supabase
+        .from('user_roles')
+        .insert([{ user_id: userId, role: 'admin' as const }]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      setNewAdminEmail('');
+      setIsAddAdminOpen(false);
+      toast({
+        title: 'Admin added',
+        description: 'The user now has admin privileges.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Failed to add admin',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const removeAdmin = useMutation({
+    mutationFn: async (adminId: string) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('id', adminId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast({
+        title: 'Admin removed',
+        description: 'Admin privileges have been revoked.',
+      });
+    },
   });
 
   const deleteReport = useMutation({
@@ -212,10 +322,10 @@ export default function AdminDashboard() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription>Status</CardDescription>
+              <CardDescription>Admin Users</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-primary" />
-                Active
+                <Users className="h-6 w-6 text-primary" />
+                {admins?.length || 0}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -315,6 +425,107 @@ export default function AdminDashboard() {
                 <p className="text-lg">All clear!</p>
                 <p className="text-sm">No pending reports to review.</p>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Admin Management */}
+        <Card className="mt-8">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Admin Users</CardTitle>
+              <CardDescription>
+                Manage who has admin access
+              </CardDescription>
+            </div>
+            <Dialog open={isAddAdminOpen} onOpenChange={setIsAddAdminOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Add Admin
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Admin User</DialogTitle>
+                  <DialogDescription>
+                    Enter the email of a registered user to grant them admin access.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Input
+                    placeholder="user@example.com"
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    type="email"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button
+                    onClick={() => addAdmin.mutate(newAdminEmail)}
+                    disabled={!newAdminEmail || addAdmin.isPending}
+                  >
+                    {addAdmin.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Add Admin
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </CardHeader>
+          <CardContent>
+            {adminsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : admins && admins.length > 0 ? (
+              <div className="space-y-2">
+                {admins.map((admin) => (
+                  <div
+                    key={admin.id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Shield className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">{admin.email}</span>
+                      {admin.user_id === user?.id && (
+                        <Badge variant="secondary" className="text-xs">You</Badge>
+                      )}
+                    </div>
+                    {admin.user_id !== user?.id && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove Admin?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will revoke admin privileges from {admin.email}. They will no longer have access to this dashboard.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => removeAdmin.mutate(admin.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Remove
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-8">No admins found.</p>
             )}
           </CardContent>
         </Card>
