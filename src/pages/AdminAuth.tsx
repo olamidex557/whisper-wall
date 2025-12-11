@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 
 export default function AdminAuth() {
   const navigate = useNavigate();
@@ -180,10 +181,11 @@ export default function AdminAuth() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
-                        minLength={6}
+                        minLength={8}
                         required
                       />
                     </div>
+                    <PasswordStrengthIndicator password={password} />
                   </div>
 
                   <Button type="submit" className="w-full" disabled={isLoading}>
