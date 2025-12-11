@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { Confession, Report, TAG_LABELS } from '@/types/confession';
 import { User } from '@supabase/supabase-js';
 
@@ -56,6 +57,9 @@ export default function AdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Auto logout after 15 minutes of inactivity
+  useInactivityTimeout({ timeoutMs: 15 * 60 * 1000 });
 
   useEffect(() => {
     const checkAuth = async () => {
