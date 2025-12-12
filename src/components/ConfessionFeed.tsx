@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { ConfessionCard } from './ConfessionCard';
+import { ConfessionFeedSkeleton } from './ConfessionCardSkeleton';
 import { ConfessionTag, TAG_LABELS } from '@/types/confession';
 import { useConfessions, useUserVotes } from '@/hooks/useConfessions';
 import { cn } from '@/lib/utils';
@@ -141,10 +142,7 @@ export function ConfessionFeed() {
 
       {/* Confessions List */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <span className="text-muted-foreground">Loading confessions...</span>
-        </div>
+        <ConfessionFeedSkeleton count={4} />
       ) : error ? (
         <div className="text-center py-16">
           <p className="text-destructive font-medium">Failed to load confessions.</p>
