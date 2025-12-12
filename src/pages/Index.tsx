@@ -37,6 +37,10 @@ const Index = () => {
               <Link to="/privacy" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
                 Privacy Policy
               </Link>
+              <span className="text-border">•</span>
+              <Link to="/terms" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
+                Terms of Service
+              </Link>
             </div>
             <p className="mt-4 opacity-70">
               © {new Date().getFullYear()} Confess. A safe space for anonymous expression.
