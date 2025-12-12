@@ -2,6 +2,7 @@ import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { CreateConfession } from '@/components/CreateConfession';
 import { ConfessionFeed } from '@/components/ConfessionFeed';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
@@ -32,7 +33,12 @@ const Index = () => {
               <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
               Your privacy matters. We don't collect personal data.
             </p>
-            <p className="mt-2 opacity-70">
+            <div className="mt-4 flex items-center justify-center gap-4">
+              <Link to="/privacy" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
+                Privacy Policy
+              </Link>
+            </div>
+            <p className="mt-4 opacity-70">
               © {new Date().getFullYear()} Confess. A safe space for anonymous expression.
             </p>
           </div>
