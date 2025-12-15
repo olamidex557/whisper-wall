@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Ghost } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { NotificationBell } from './NotificationBell';
 
 export function Header() {
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ export function Header() {
           </div>
           <span className="font-bold text-xl gradient-text">Confess</span>
         </Link>
+
+        <NotificationBell />
       </div>
     </header>
   );
