@@ -29,13 +29,22 @@ export default function AdminAuth() {
 
       if (error) throw error;
 
+      // Get the logged in user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('Failed to get user information');
+      }
+
       // Check if user is admin
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('role')
-        .single();
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
 
-      if (!roleData || roleData.role !== 'admin') {
+      if (!roleData) {
         await supabase.auth.signOut();
         throw new Error('You do not have admin access');
       }
