@@ -1,16 +1,20 @@
-import { Bell, BellOff, BellRing } from 'lucide-react';
+import { Bell, BellOff, BellRing, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotifications } from '@/hooks/useNotifications';
+import { TAG_LABELS } from '@/types/confession';
 import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
 
 export function NotificationBell() {
   const {
     newConfessionsCount,
+    recentConfessions,
     markAsSeen,
     pushEnabled,
     pushSupported,
@@ -21,12 +25,7 @@ export function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          onClick={markAsSeen}
-        >
+        <Button variant="ghost" size="icon" className="relative">
           {newConfessionsCount > 0 ? (
             <BellRing className="h-5 w-5 text-primary animate-pulse" />
           ) : (
@@ -42,25 +41,56 @@ export function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72" align="end">
-        <div className="space-y-4">
-          <div className="space-y-1">
+      <PopoverContent className="w-80" align="end">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
             <h4 className="font-semibold">Notifications</h4>
-            <p className="text-sm text-muted-foreground">
-              {newConfessionsCount > 0
-                ? `${newConfessionsCount} new confession${newConfessionsCount > 1 ? 's' : ''} since your last visit`
-                : 'No new confessions'}
-            </p>
+            {newConfessionsCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs h-7"
+                onClick={markAsSeen}
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                Mark all read
+              </Button>
+            )}
           </div>
 
+          {recentConfessions.length > 0 ? (
+            <ScrollArea className="max-h-60">
+              <div className="space-y-2">
+                {recentConfessions.map((confession) => (
+                  <div
+                    key={confession.id}
+                    className="rounded-md border border-border bg-muted/50 p-2.5 space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-medium text-muted-foreground">
+                        {TAG_LABELS[confession.tag]}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {formatDistanceToNow(new Date(confession.created_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-foreground line-clamp-2">
+                      {confession.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          ) : (
+            <p className="text-sm text-muted-foreground py-2">No new confessions</p>
+          )}
+
           {pushSupported && (
-            <div className="border-t border-border pt-4">
+            <div className="border-t border-border pt-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <p className="text-sm font-medium">Push notifications</p>
-                  <p className="text-xs text-muted-foreground">
-                    Get notified when away
-                  </p>
+                  <p className="text-xs text-muted-foreground">Get notified when away</p>
                 </div>
                 <Button
                   variant={pushEnabled ? 'outline' : 'default'}

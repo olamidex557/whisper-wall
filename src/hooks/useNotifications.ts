@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { Confession } from '@/types/confession';
 
 const LAST_SEEN_KEY = 'confess_last_seen_timestamp';
 const PUSH_ENABLED_KEY = 'confess_push_notifications_enabled';
 
 export function useNotifications() {
   const [newConfessionsCount, setNewConfessionsCount] = useState(0);
+  const [recentConfessions, setRecentConfessions] = useState<Confession[]>([]);
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushSupported, setPushSupported] = useState(false);
 
@@ -29,18 +31,21 @@ export function useNotifications() {
     setNewConfessionsCount(0);
   }, []);
 
-  // Fetch count of new confessions since last visit
-  const fetchNewCount = useCallback(async () => {
+  // Fetch new confessions since last visit
+  const fetchNewConfessions = useCallback(async () => {
     const lastSeen = getLastSeen();
     
-    const { count, error } = await supabase
+    const { data, count, error } = await supabase
       .from('confessions')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'exact' })
       .eq('is_approved', true)
-      .gt('created_at', lastSeen.toISOString());
+      .gt('created_at', lastSeen.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(5);
 
-    if (!error && count !== null) {
-      setNewConfessionsCount(count);
+    if (!error) {
+      if (count !== null) setNewConfessionsCount(count);
+      if (data) setRecentConfessions(data as Confession[]);
     }
   }, [getLastSeen]);
 
@@ -103,7 +108,7 @@ export function useNotifications() {
 
   // Listen for new confessions in real-time
   useEffect(() => {
-    fetchNewCount();
+    fetchNewConfessions();
 
     const channel = supabase
       .channel('notifications-realtime')
@@ -137,10 +142,11 @@ export function useNotifications() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchNewCount, showBrowserNotification]);
+  }, [fetchNewConfessions, showBrowserNotification]);
 
   return {
     newConfessionsCount,
+    recentConfessions,
     markAsSeen,
     pushEnabled,
     pushSupported,
