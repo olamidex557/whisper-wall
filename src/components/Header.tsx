@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Ghost } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { NotificationBell } from './NotificationBell';
+import logoImage from '@/assets/logo.png';
 
 export function Header() {
   const navigate = useNavigate();
@@ -33,10 +33,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/60 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 group">
-          <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
-            <Ghost className="h-6 w-6 text-primary" />
-            <div className="absolute inset-0 rounded-xl bg-primary/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+          <img src={logoImage} alt="Confess logo" className="h-9 w-9 rounded-xl group-hover:scale-105 transition-transform duration-300" />
           <span className="font-bold text-xl gradient-text">Confess</span>
         </Link>
 
