@@ -16,6 +16,7 @@ export default function AdminAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,6 +159,32 @@ export default function AdminAuth() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Signing in...' : 'Sign In'}
                   </Button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!email) {
+                        toast({ title: 'Enter your email', description: 'Please enter your email address first.', variant: 'destructive' });
+                        return;
+                      }
+                      setIsResetting(true);
+                      try {
+                        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                          redirectTo: `${window.location.origin}/admin`,
+                        });
+                        if (error) throw error;
+                        toast({ title: 'Reset email sent', description: 'Check your inbox for the password reset link.' });
+                      } catch (error: any) {
+                        toast({ title: 'Reset failed', description: error.message, variant: 'destructive' });
+                      } finally {
+                        setIsResetting(false);
+                      }
+                    }}
+                    disabled={isResetting}
+                    className="w-full text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {isResetting ? 'Sending...' : 'Forgot your password?'}
+                  </button>
                 </form>
               </TabsContent>
 
