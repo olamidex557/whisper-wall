@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Send, AlertCircle, Sparkles } from 'lucide-react';
+import { Send, AlertCircle, Sparkles, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -114,8 +115,11 @@ export function CreateConfession() {
           </Button>
 
           <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
-            We don't collect any personal data. Your confession is truly anonymous.
+            <BookOpen className="h-3 w-3 text-muted-foreground/70" />
+            By posting, you agree to our{' '}
+            <Link to="/guidelines" className="text-primary hover:underline underline-offset-2">
+              Community Guidelines
+            </Link>
           </p>
         </form>
       </CardContent>
