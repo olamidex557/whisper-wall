@@ -2,6 +2,7 @@ import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { CreateConfession } from '@/components/CreateConfession';
 import { ConfessionFeed } from '@/components/ConfessionFeed';
+import { TopWhisper } from '@/components/TopWhisper';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -18,6 +19,11 @@ const Index = () => {
         <Hero />
         
         <main className="container mx-auto px-4 pb-16 max-w-2xl">
+          {/* Top Whisper of the Week */}
+          <div className="mb-8">
+            <TopWhisper />
+          </div>
+
           {/* Create Confession - Full width on top */}
           <div className="mb-8">
             <CreateConfession />
