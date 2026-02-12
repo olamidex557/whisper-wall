@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" role="document">
       {/* Animated background gradient */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl" />
@@ -39,19 +39,19 @@ const Index = () => {
               <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
               Your privacy matters. We don't collect personal data.
             </p>
-            <div className="mt-4 flex items-center justify-center gap-4">
+            <nav aria-label="Footer navigation" className="mt-4 flex items-center justify-center gap-4">
               <Link to="/privacy" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
                 Privacy Policy
               </Link>
-              <span className="text-border">•</span>
+              <span className="text-border" aria-hidden="true">•</span>
               <Link to="/terms" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
                 Terms of Service
               </Link>
-              <span className="text-border">•</span>
+              <span className="text-border" aria-hidden="true">•</span>
               <Link to="/guidelines" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
                 Community Guidelines
               </Link>
-            </div>
+            </nav>
             <p className="mt-4 opacity-70">
               © {new Date().getFullYear()} Confess. A safe space for anonymous expression.
             </p>
