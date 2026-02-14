@@ -179,12 +179,35 @@ export function ConfessionFeed() {
           )}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">🤫</span>
+      <div className="text-center py-16 space-y-6">
+          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto animate-pulse">
+            <span className="text-4xl">🤫</span>
           </div>
-          <p className="text-lg font-medium text-foreground mb-2">No confessions yet</p>
-          <p className="text-sm text-muted-foreground">Be the first to share your anonymous confession!</p>
+          <div>
+            <h3 className="text-xl font-bold text-foreground mb-2">The Wall is Empty...</h3>
+            <p className="text-muted-foreground max-w-sm mx-auto">
+              This is a safe space for anonymous expression. No accounts, no tracking — just honest words.
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-3 pt-2">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                100% Anonymous
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                No Sign-up
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-secondary" />
+                Zero Tracking
+              </span>
+            </div>
+            <p className="text-sm font-medium text-primary">
+              ↑ Scroll up and be the first to confess
+            </p>
+          </div>
         </div>
       )}
     </div>
