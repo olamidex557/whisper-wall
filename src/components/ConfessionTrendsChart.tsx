@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, subDays, startOfDay, eachDayOfInterval, differenceInDays } from 'date-fns';
-import { BarChart3, CalendarIcon, Loader2 } from 'lucide-react';
+import { BarChart3, CalendarIcon, Download, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -96,10 +96,27 @@ export default function ConfessionTrendsChart() {
     value: count,
   })).sort((a, b) => b.value - a.value);
 
-  // Period comparison (selected range vs previous equal range)
-  const prevFrom = subDays(from, totalDays);
   const currentCount = confessions?.length || 0;
   const avgPerDay = totalDays > 0 ? (currentCount / totalDays).toFixed(1) : '0';
+
+  const exportCsv = () => {
+    if (!confessions?.length) return;
+    const header = 'Date,Tag,Content Date\n';
+    const rows = confessions.map((c) =>
+      `"${format(new Date(c.created_at), 'yyyy-MM-dd HH:mm:ss')}","${c.tag}","${format(new Date(c.created_at), 'MMM d, yyyy')}"`
+    ).join('\n');
+    const summaryRows = dailyData.map((d) => `"${d.date}","daily_count","${d.count}"`).join('\n');
+    const blob = new Blob(
+      [`--- Raw Data ---\nDate,Tag,Formatted Date\n${rows}\n\n--- Daily Summary ---\nDate,Type,Count\n${summaryRows}`],
+      { type: 'text/csv' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `confessions-analytics-${format(from, 'yyyy-MM-dd')}-to-${format(to, 'yyyy-MM-dd')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-4">
@@ -116,25 +133,37 @@ export default function ConfessionTrendsChart() {
             {p.label}
           </Button>
         ))}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className={cn("rounded-xl text-xs h-8 gap-1.5 ml-auto")}>
-              <CalendarIcon className="h-3.5 w-3.5" />
-              {format(from, 'MMM d')} – {format(to, 'MMM d, yyyy')}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="end">
-            <Calendar
-              mode="range"
-              selected={dateRange}
-              onSelect={(range) => range && setDateRange(range)}
-              numberOfMonths={2}
-              disabled={(date) => date > new Date()}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="flex items-center gap-2 ml-auto">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("rounded-xl text-xs h-8 gap-1.5")}>
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {format(from, 'MMM d')} – {format(to, 'MMM d, yyyy')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={(range) => range && setDateRange(range)}
+                numberOfMonths={2}
+                disabled={(date) => date > new Date()}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl text-xs h-8 gap-1.5"
+            onClick={exportCsv}
+            disabled={!confessions?.length}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       {/* Summary row */}
