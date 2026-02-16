@@ -175,63 +175,13 @@ export function useVote() {
     mutationFn: async ({ confessionId, voteType }: { confessionId: string; voteType: 'up' | 'down' }) => {
       if (!fingerprint) throw new Error('Unable to vote');
 
-      // Check existing vote
-      const { data: existingVote } = await supabase
-        .from('votes')
-        .select('*')
-        .eq('confession_id', confessionId)
-        .eq('fingerprint', fingerprint)
-        .maybeSingle();
-
-      // Get current confession
-      const { data: confession } = await supabase
-        .from('confessions')
-        .select('upvotes, downvotes')
-        .eq('id', confessionId)
-        .single();
-
-      if (!confession) throw new Error('Confession not found');
-
-      let newUpvotes = confession.upvotes;
-      let newDownvotes = confession.downvotes;
-
-      if (existingVote) {
-        // Remove existing vote
-        await supabase.from('votes').delete().eq('id', existingVote.id);
-        
-        if (existingVote.vote_type === 'up') {
-          newUpvotes--;
-        } else {
-          newDownvotes--;
-        }
-
-        // If clicking same vote type, just remove it
-        if (existingVote.vote_type === voteType) {
-          await supabase
-            .from('confessions')
-            .update({ upvotes: newUpvotes, downvotes: newDownvotes })
-            .eq('id', confessionId);
-          return;
-        }
-      }
-
-      // Add new vote
-      await supabase.from('votes').insert({
-        confession_id: confessionId,
-        fingerprint,
-        vote_type: voteType,
+      const { error } = await supabase.rpc('handle_vote', {
+        p_confession_id: confessionId,
+        p_fingerprint: fingerprint,
+        p_vote_type: voteType,
       });
 
-      if (voteType === 'up') {
-        newUpvotes++;
-      } else {
-        newDownvotes++;
-      }
-
-      await supabase
-        .from('confessions')
-        .update({ upvotes: newUpvotes, downvotes: newDownvotes })
-        .eq('id', confessionId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['confessions'] });
