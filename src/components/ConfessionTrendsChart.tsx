@@ -1,20 +1,33 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays, startOfDay } from 'date-fns';
-import { BarChart3, Loader2 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { format, subDays, startOfDay, eachDayOfInterval, differenceInDays } from 'date-fns';
+import { BarChart3, CalendarIcon, Loader2 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { TAG_LABELS } from '@/types/confession';
+import type { DateRange } from 'react-day-picker';
 
-function useTrendsData() {
+const PRESETS = [
+  { label: '7 days', days: 7 },
+  { label: '14 days', days: 14 },
+  { label: '30 days', days: 30 },
+  { label: '90 days', days: 90 },
+] as const;
+
+function useTrendsData(from: Date, to: Date) {
   return useQuery({
-    queryKey: ['admin-trends'],
+    queryKey: ['admin-trends', from.toISOString(), to.toISOString()],
     queryFn: async () => {
-      const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
       const { data, error } = await supabase
         .from('confessions')
         .select('created_at, tag')
-        .gte('created_at', thirtyDaysAgo)
+        .gte('created_at', from.toISOString())
+        .lte('created_at', to.toISOString())
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data;
@@ -48,24 +61,25 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export default function ConfessionTrendsChart() {
-  const { data: confessions, isLoading } = useTrendsData();
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
 
-  if (isLoading) {
-    return (
-      <Card className="border-border/50">
-        <CardContent className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const from = dateRange.from || subDays(new Date(), 30);
+  const to = dateRange.to || new Date();
+  const totalDays = differenceInDays(to, from) + 1;
+
+  const { data: confessions, isLoading } = useTrendsData(startOfDay(from), to);
+
+  const handlePreset = (days: number) => {
+    setDateRange({ from: subDays(new Date(), days), to: new Date() });
+  };
 
   // Daily trend data
+  const allDays = eachDayOfInterval({ start: startOfDay(from), end: startOfDay(to) });
   const dailyMap = new Map<string, number>();
-  for (let i = 29; i >= 0; i--) {
-    const key = format(startOfDay(subDays(new Date(), i)), 'MMM d');
-    dailyMap.set(key, 0);
-  }
+  allDays.forEach((d) => dailyMap.set(format(d, 'MMM d'), 0));
   confessions?.forEach((c) => {
     const key = format(new Date(c.created_at), 'MMM d');
     if (dailyMap.has(key)) dailyMap.set(key, (dailyMap.get(key) || 0) + 1);
@@ -82,39 +96,69 @@ export default function ConfessionTrendsChart() {
     value: count,
   })).sort((a, b) => b.value - a.value);
 
-  // Weekly comparison (this week vs last week)
-  const now = new Date();
-  const thisWeekStart = subDays(now, 7);
-  const lastWeekStart = subDays(now, 14);
-  const thisWeek = confessions?.filter(c => new Date(c.created_at) >= thisWeekStart).length || 0;
-  const lastWeek = confessions?.filter(c => {
-    const d = new Date(c.created_at);
-    return d >= lastWeekStart && d < thisWeekStart;
-  }).length || 0;
-  const weeklyChange = lastWeek > 0 ? Math.round(((thisWeek - lastWeek) / lastWeek) * 100) : thisWeek > 0 ? 100 : 0;
+  // Period comparison (selected range vs previous equal range)
+  const prevFrom = subDays(from, totalDays);
+  const currentCount = confessions?.length || 0;
+  const avgPerDay = totalDays > 0 ? (currentCount / totalDays).toFixed(1) : '0';
 
   return (
     <div className="space-y-4">
+      {/* Date range controls */}
+      <div className="flex flex-wrap items-center gap-2">
+        {PRESETS.map((p) => (
+          <Button
+            key={p.days}
+            variant={totalDays === p.days + 1 ? 'default' : 'outline'}
+            size="sm"
+            className="rounded-xl text-xs h-8"
+            onClick={() => handlePreset(p.days)}
+          >
+            {p.label}
+          </Button>
+        ))}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("rounded-xl text-xs h-8 gap-1.5 ml-auto")}>
+              <CalendarIcon className="h-3.5 w-3.5" />
+              {format(from, 'MMM d')} – {format(to, 'MMM d, yyyy')}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={(range) => range && setDateRange(range)}
+              numberOfMonths={2}
+              disabled={(date) => date > new Date()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+
       {/* Summary row */}
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase tracking-wider font-medium">Last 30 Days</CardDescription>
-            <CardTitle className="text-3xl font-extrabold">{confessions?.length || 0}</CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium">Selected Period</CardDescription>
+            <CardTitle className="text-3xl font-extrabold">
+              {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : currentCount}
+            </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <p className="text-xs text-muted-foreground">Total confessions</p>
+            <p className="text-xs text-muted-foreground">Total confessions ({totalDays} days)</p>
           </CardContent>
         </Card>
         <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase tracking-wider font-medium">This Week</CardDescription>
-            <CardTitle className="text-3xl font-extrabold">{thisWeek}</CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium">Daily Average</CardDescription>
+            <CardTitle className="text-3xl font-extrabold">
+              {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : avgPerDay}
+            </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <p className={`text-xs font-medium ${weeklyChange >= 0 ? 'text-primary' : 'text-destructive'}`}>
-              {weeklyChange >= 0 ? '↑' : '↓'} {Math.abs(weeklyChange)}% vs last week
-            </p>
+            <p className="text-xs text-muted-foreground">Confessions per day</p>
           </CardContent>
         </Card>
         <Card className="border-border/50">
@@ -130,7 +174,6 @@ export default function ConfessionTrendsChart() {
 
       {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">
-        {/* Area chart - daily trend */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -139,58 +182,69 @@ export default function ConfessionTrendsChart() {
               </div>
               <div>
                 <CardTitle className="text-lg">Daily Confessions</CardTitle>
-                <CardDescription className="text-xs">Submissions over the last 30 days</CardDescription>
+                <CardDescription className="text-xs">
+                  {format(from, 'MMM d')} – {format(to, 'MMM d, yyyy')}
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[260px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={dailyData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    tickLine={false}
-                    axisLine={false}
-                    allowDecimals={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    type="monotone"
-                    dataKey="count"
-                    name="Confessions"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorCount)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center h-[260px]">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="h-[260px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={dailyData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={totalDays > 60 ? Math.floor(totalDays / 10) : 'preserveStartEnd'}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      name="Confessions"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorCount)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Pie chart - tag distribution */}
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="text-lg">Categories</CardTitle>
             <CardDescription className="text-xs">Tag distribution</CardDescription>
           </CardHeader>
           <CardContent>
-            {tagData.length === 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center h-[200px]">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : tagData.length === 0 ? (
               <p className="text-center text-muted-foreground py-8 text-sm">No data yet</p>
             ) : (
               <>
