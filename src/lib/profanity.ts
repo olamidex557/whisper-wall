@@ -25,8 +25,8 @@ export function filterProfanity(text: string): string {
 // Spam detection patterns
 const spamPatterns = [
   /(.)\1{4,}/i, // Repeated characters
-  /(https?:\/\/[^\s]+)/gi, // URLs
-  /\b(buy|click|free|winner|lottery|prize)\b/gi, // Spam keywords
+  /https?:\/\/[^\s]+/i, // URLs
+  /\b(buy|click|free|winner|lottery|prize)\b/i, // Spam keywords
 ];
 
 export function isSpam(text: string): boolean {

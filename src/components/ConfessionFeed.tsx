@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, TrendingUp, Clock, Filter, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -38,8 +38,15 @@ interface ConfessionFeedProps {
 
 export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBookmark, isBookmarked }: ConfessionFeedProps) {
   const [sortBy, setSortBy] = useState<SortType>('newest');
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<ConfessionTag | null>(null);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchInput), 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const { 
     data, 
@@ -68,8 +75,8 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search confessions..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="pl-11 h-12 bg-card/50 border-border/50 focus:border-primary/50 rounded-xl"
           />
         </form>
@@ -126,16 +133,16 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
       </div>
 
       {/* Active Filters */}
-      {(searchQuery || tagFilter) && (
+      {(searchInput || tagFilter) && (
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm text-muted-foreground">Active filters:</span>
-          {searchQuery && (
+          {searchInput && (
             <Badge 
               variant="secondary" 
               className="cursor-pointer bg-secondary/20 text-secondary hover:bg-secondary/30 border border-secondary/30"
-              onClick={() => setSearchQuery('')}
+              onClick={() => { setSearchInput(''); setSearchQuery(''); }}
             >
-              "{searchQuery}" ×
+              "{searchInput}" ×
             </Badge>
           )}
           {tagFilter && (
@@ -193,33 +200,39 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
       ) : (
       <div className="text-center py-16 space-y-6">
           <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto animate-pulse">
-            <span className="text-4xl">🤫</span>
+            <span className="text-4xl">{showBookmarkedOnly ? '🔖' : '🤫'}</span>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-foreground mb-2">The Wall is Empty...</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              {showBookmarkedOnly ? 'No Saved Confessions Yet' : 'The Wall is Empty...'}
+            </h3>
             <p className="text-muted-foreground max-w-sm mx-auto">
-              This is a safe space for anonymous expression. No accounts, no tracking — just honest words.
+              {showBookmarkedOnly 
+                ? 'Tap the bookmark icon on any confession to save it here for later.'
+                : 'This is a safe space for anonymous expression. No accounts, no tracking — just honest words.'}
             </p>
           </div>
-          <div className="flex flex-col items-center gap-3 pt-2">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                100% Anonymous
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-accent" />
-                No Sign-up
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-secondary" />
-                Zero Tracking
-              </span>
+          {!showBookmarkedOnly && (
+            <div className="flex flex-col items-center gap-3 pt-2">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-primary" />
+                  100% Anonymous
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-accent" />
+                  No Sign-up
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-secondary" />
+                  Zero Tracking
+                </span>
+              </div>
+              <p className="text-sm font-medium text-primary">
+                ↑ Scroll up and be the first to confess
+              </p>
             </div>
-            <p className="text-sm font-medium text-primary">
-              ↑ Scroll up and be the first to confess
-            </p>
-          </div>
+          )}
         </div>
       )}
     </div>
