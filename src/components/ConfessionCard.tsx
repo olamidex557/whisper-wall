@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { ThumbsUp, ThumbsDown, Flag, Share2, MoreHorizontal } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Flag, Share2, MoreHorizontal, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +28,8 @@ import { ReplySection } from './ReplySection';
 interface ConfessionCardProps {
   confession: Confession;
   userVote?: 'up' | 'down';
+  isBookmarked?: boolean;
+  onToggleBookmark?: (id: string) => void;
 }
 
 const TAG_STYLES: Record<string, string> = {
@@ -41,7 +43,7 @@ const TAG_STYLES: Record<string, string> = {
   other: 'bg-muted text-muted-foreground border-border',
 };
 
-export function ConfessionCard({ confession, userVote }: ConfessionCardProps) {
+export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBookmark }: ConfessionCardProps) {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [reportReason, setReportReason] = useState('');
   
@@ -156,6 +158,21 @@ export function ConfessionCard({ confession, userVote }: ConfessionCardProps) {
             </div>
 
             <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onToggleBookmark?.(confession.id)}
+                className={cn(
+                  'rounded-full transition-all duration-200',
+                  isBookmarked
+                    ? 'text-primary bg-primary/20 hover:bg-primary/30'
+                    : 'hover:bg-primary/10 hover:text-primary'
+                )}
+                aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+              >
+                {isBookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+              </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
