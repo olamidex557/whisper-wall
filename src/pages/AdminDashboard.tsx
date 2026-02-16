@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { Confession, Report, TAG_LABELS } from '@/types/confession';
+import ConfessionTrendsChart from '@/components/ConfessionTrendsChart';
 import { User } from '@supabase/supabase-js';
 
 interface ReportWithConfession extends Report {
@@ -408,6 +409,9 @@ export default function AdminDashboard() {
           <StatCard icon={AlertTriangle} label="Reported Confessions" value={uniqueConfessions.size} iconClassName="text-accent" />
           <StatCard icon={Users} label="Admin Users" value={admins?.length || 0} />
         </div>
+
+        {/* Analytics */}
+        <ConfessionTrendsChart />
 
         {/* Reports */}
         <Card className="border-border/50">
