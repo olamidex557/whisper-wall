@@ -10,6 +10,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import NotFound from "./pages/NotFound";
+import SecurityStatus from "./pages/SecurityStatus";
+import { TrustBadge } from "./components/TrustBadge";
 
 const queryClient = new QueryClient();
 
@@ -24,10 +26,12 @@ const App = () => (
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/guidelines" element={<CommunityGuidelines />} />
+          <Route path="/security" element={<SecurityStatus />} />
           <Route path="/admin" element={<AdminAuth />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <TrustBadge />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
