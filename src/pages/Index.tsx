@@ -1,11 +1,18 @@
+import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { CreateConfession } from '@/components/CreateConfession';
 import { ConfessionFeed } from '@/components/ConfessionFeed';
 import { TopWhisper } from '@/components/TopWhisper';
 import { Link } from 'react-router-dom';
+import { useBookmarks } from '@/hooks/useBookmarks';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Bookmark, MessageSquare } from 'lucide-react';
 
 const Index = () => {
+  const { bookmarkedIds, toggle, isBookmarked } = useBookmarks();
+  const [feedView, setFeedView] = useState<'all' | 'saved'>('all');
+
   return (
     <div className="min-h-screen bg-background" role="document">
       {/* Animated background gradient */}
@@ -29,8 +36,29 @@ const Index = () => {
             <CreateConfession />
           </div>
 
-          {/* Confession Feed - Single column */}
-          <ConfessionFeed />
+          {/* Feed View Toggle */}
+          <div className="mb-6">
+            <Tabs value={feedView} onValueChange={(v) => setFeedView(v as 'all' | 'saved')}>
+              <TabsList className="bg-card/50 border border-border/50 p-1">
+                <TabsTrigger value="all" className="gap-2 data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg">
+                  <MessageSquare className="h-4 w-4" />
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="saved" className="gap-2 data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg">
+                  <Bookmark className="h-4 w-4" />
+                  Saved ({bookmarkedIds.length})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Confession Feed */}
+          <ConfessionFeed
+            bookmarkedIds={bookmarkedIds}
+            showBookmarkedOnly={feedView === 'saved'}
+            onToggleBookmark={toggle}
+            isBookmarked={isBookmarked}
+          />
         </main>
 
         <footer className="border-t border-border/30 py-8 relative z-10">

@@ -29,7 +29,14 @@ const TAG_FILTER_STYLES: Record<string, string> = {
   other: 'bg-muted/50 text-muted-foreground border-border hover:bg-muted/70',
 };
 
-export function ConfessionFeed() {
+interface ConfessionFeedProps {
+  bookmarkedIds?: string[];
+  showBookmarkedOnly?: boolean;
+  onToggleBookmark?: (id: string) => void;
+  isBookmarked?: (id: string) => boolean;
+}
+
+export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBookmark, isBookmarked }: ConfessionFeedProps) {
   const [sortBy, setSortBy] = useState<SortType>('newest');
   const [searchQuery, setSearchQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<ConfessionTag | null>(null);
@@ -44,7 +51,10 @@ export function ConfessionFeed() {
   } = useConfessions(sortBy, searchQuery, tagFilter);
   const { data: userVotes } = useUserVotes();
 
-  const confessions = data?.pages.flat() ?? [];
+  const allConfessions = data?.pages.flat() ?? [];
+  const confessions = showBookmarkedOnly && bookmarkedIds
+    ? allConfessions.filter((c) => bookmarkedIds.includes(c.id))
+    : allConfessions;
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -155,6 +165,8 @@ export function ConfessionFeed() {
               key={confession.id}
               confession={confession}
               userVote={userVotes?.[confession.id]}
+              isBookmarked={isBookmarked?.(confession.id)}
+              onToggleBookmark={onToggleBookmark}
             />
           ))}
           
