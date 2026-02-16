@@ -1,12 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { NotificationBell } from './NotificationBell';
+import { Button } from '@/components/ui/button';
 import logoImage from '@/assets/logo.png';
 
 export function Header() {
   const navigate = useNavigate();
   const [clickCount, setClickCount] = useState(0);
   const clickTimer = useRef<NodeJS.Timeout | null>(null);
+  const { theme, setTheme } = useTheme();
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,7 +41,19 @@ export function Header() {
           <span className="font-bold text-xl gradient-text">Confess</span>
         </Link>
 
-        <NotificationBell />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="rounded-full h-9 w-9"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+          <NotificationBell />
+        </div>
       </div>
     </header>
   );
