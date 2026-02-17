@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Shield, Trash2, LogOut, ArrowLeft, Flag, AlertTriangle, CheckCircle, Loader2, UserPlus, Users, X, Sparkles } from 'lucide-react';
+import { Shield, Trash2, LogOut, ArrowLeft, Flag, AlertTriangle, CheckCircle, Loader2, UserPlus, Users, X, Sparkles, Activity, TrendingUp, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,21 +36,26 @@ interface AdminUser {
 
 // --- Sub-components ---
 
-function StatCard({ icon: Icon, label, value, iconClassName }: {
-  icon: React.ElementType; label: string; value: number; iconClassName?: string;
+function StatCard({ icon: Icon, label, value, iconClassName, gradient }: {
+  icon: React.ElementType; label: string; value: number; iconClassName?: string; gradient?: string;
 }) {
   return (
-    <Card className="relative overflow-hidden group hover:border-primary/30 transition-colors">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <Card className="relative overflow-hidden group hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-border/40">
+      <div className={`absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity ${gradient || 'bg-gradient-to-br from-primary to-secondary'}`} />
+      <div className="absolute top-0 right-0 w-32 h-32 -translate-y-8 translate-x-8">
+        <div className={`w-full h-full rounded-full opacity-[0.04] group-hover:opacity-[0.08] transition-opacity ${gradient || 'bg-primary'}`} />
+      </div>
       <CardHeader className="pb-2 relative">
-        <CardDescription className="text-xs uppercase tracking-wider font-medium">{label}</CardDescription>
-        <CardTitle className="text-4xl font-extrabold flex items-center gap-3 mt-1">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+        <CardDescription className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground/80">{label}</CardDescription>
+      </CardHeader>
+      <CardContent className="relative pt-0">
+        <div className="flex items-end justify-between">
+          <span className="text-4xl font-black tracking-tight">{value}</span>
+          <div className={`h-11 w-11 rounded-2xl flex items-center justify-center ${iconClassName?.includes('destructive') ? 'bg-destructive/10' : iconClassName?.includes('accent') ? 'bg-accent/10' : 'bg-primary/10'}`}>
             <Icon className={`h-5 w-5 ${iconClassName || 'text-primary'}`} />
           </div>
-          {value}
-        </CardTitle>
-      </CardHeader>
+        </div>
+      </CardContent>
     </Card>
   );
 }
@@ -62,12 +67,15 @@ function ReportsTable({ reports, deleteReport, deleteConfession }: {
 }) {
   if (reports.length === 0) {
     return (
-      <div className="text-center py-16 text-muted-foreground">
-        <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="h-8 w-8 text-primary" />
+      <div className="text-center py-20 text-muted-foreground">
+        <div className="relative inline-block mb-6">
+          <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mx-auto">
+            <CheckCircle className="h-10 w-10 text-primary" />
+          </div>
+          <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary/20 animate-pulse" />
         </div>
-        <p className="text-lg font-semibold text-foreground">All clear!</p>
-        <p className="text-sm mt-1">No pending reports to review.</p>
+        <p className="text-xl font-bold text-foreground">All clear!</p>
+        <p className="text-sm mt-2 text-muted-foreground/80">No pending reports to review. The community is thriving.</p>
       </div>
     );
   }
@@ -76,49 +84,50 @@ function ReportsTable({ reports, deleteReport, deleteConfession }: {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-border/50 hover:bg-transparent">
-            <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Confession</TableHead>
-            <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Tag</TableHead>
-            <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Reason</TableHead>
-            <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Date</TableHead>
-            <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground text-right">Actions</TableHead>
+          <TableRow className="border-border/30 hover:bg-transparent">
+            <TableHead className="text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">Confession</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">Tag</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">Reason</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">Date</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {reports.map((report) => (
-            <TableRow key={report.id} className="border-border/30 hover:bg-muted/30 transition-colors">
+          {reports.map((report, index) => (
+            <TableRow key={report.id} className="border-border/20 hover:bg-muted/20 transition-colors group" style={{ animationDelay: `${index * 50}ms` }}>
               <TableCell className="max-w-xs">
-                <p className="truncate font-medium">{report.confessions?.content || 'Deleted'}</p>
+                <p className="truncate font-medium text-sm">{report.confessions?.content || 'Deleted'}</p>
               </TableCell>
               <TableCell>
                 {report.confessions && (
-                  <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                  <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary text-[10px] font-semibold">
                     {TAG_LABELS[report.confessions.tag as keyof typeof TAG_LABELS]}
                   </Badge>
                 )}
               </TableCell>
               <TableCell className="max-w-xs">
-                <p className="truncate text-muted-foreground">{report.reason}</p>
+                <p className="truncate text-muted-foreground text-sm">{report.reason}</p>
               </TableCell>
-              <TableCell className="text-muted-foreground text-sm">
+              <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
                 {format(new Date(report.created_at), 'MMM d, yyyy')}
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteReport.mutate(report.id)}
                     disabled={deleteReport.isPending}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-foreground rounded-xl h-8 text-xs"
                   >
+                    <Eye className="h-3.5 w-3.5 mr-1" />
                     Dismiss
                   </Button>
                   {report.confessions && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" className="gap-1.5">
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <Button variant="destructive" size="sm" className="gap-1 rounded-xl h-8 text-xs">
+                          <Trash2 className="h-3 w-3" />
                           Delete
                         </Button>
                       </AlertDialogTrigger>
@@ -162,26 +171,27 @@ function AdminList({ admins, currentUserId, removeAdmin }: {
 
   return (
     <div className="space-y-2">
-      {admins.map((admin) => (
+      {admins.map((admin, index) => (
         <div
           key={admin.id}
-          className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/30 hover:border-primary/20 transition-colors"
+          className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/30 hover:border-primary/20 hover:bg-muted/30 transition-all duration-200"
+          style={{ animationDelay: `${index * 50}ms` }}
         >
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
               <Shield className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <span className="text-sm font-semibold">{admin.email}</span>
+              <span className="text-sm font-bold">{admin.email}</span>
               {admin.user_id === currentUserId && (
-                <Badge variant="secondary" className="text-xs ml-2">You</Badge>
+                <Badge className="text-[10px] ml-2 bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">You</Badge>
               )}
             </div>
           </div>
           {admin.user_id !== currentUserId && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl">
                   <X className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -340,10 +350,13 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <div className="relative">
+            <div className="h-16 w-16 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center animate-pulse">
+              <Shield className="h-8 w-8 text-primary" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-primary animate-ping opacity-30" />
           </div>
-          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+          <p className="text-sm text-muted-foreground font-medium">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -357,31 +370,36 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/60 backdrop-blur-2xl">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Back</span>
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group">
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline text-sm font-medium">Back</span>
             </Link>
-            <div className="h-5 w-px bg-border/50" />
-            <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <Shield className="h-4 w-4 text-primary-foreground" />
+            <div className="h-5 w-px bg-border/30" />
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
               </div>
               <div>
-                <span className="font-bold text-sm">Admin Dashboard</span>
+                <span className="font-bold text-sm">Admin</span>
+                <span className="text-muted-foreground text-sm font-normal ml-1 hidden sm:inline">Dashboard</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground hidden sm:inline bg-muted/50 px-3 py-1.5 rounded-full">
-              {user?.email}
-            </span>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 text-muted-foreground hover:text-foreground">
+            <div className="hidden sm:flex items-center gap-2 bg-muted/30 border border-border/30 px-3 py-1.5 rounded-xl">
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs text-muted-foreground font-medium">{user?.email}</span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 text-muted-foreground hover:text-foreground rounded-xl">
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline text-xs">Logout</span>
             </Button>
           </div>
         </div>
@@ -389,44 +407,66 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Welcome banner */}
-        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 p-6">
-          <div className="absolute top-4 right-4 opacity-10">
-            <Sparkles className="h-24 w-24 text-primary" />
+        <div className="relative overflow-hidden rounded-3xl border border-border/30 bg-gradient-to-br from-primary/[0.04] via-background to-accent/[0.04] p-8 md:p-10">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-72 h-72 -translate-y-1/3 translate-x-1/3">
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-primary/[0.06] to-transparent blur-3xl" />
+          </div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 translate-y-1/3 -translate-x-1/4">
+            <div className="w-full h-full rounded-full bg-gradient-to-tr from-accent/[0.06] to-transparent blur-3xl" />
+          </div>
+          <div className="absolute top-6 right-8 opacity-[0.04]">
+            <Sparkles className="h-32 w-32 text-primary" />
           </div>
           <div className="relative">
-            <h1 className="text-2xl font-extrabold tracking-tight">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="h-4 w-4 text-primary" />
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-primary">Command Center</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight">
               Welcome back<span className="gradient-text">, Admin</span>
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage reports, moderate content, and keep the community safe.
+            <p className="text-sm text-muted-foreground mt-2 max-w-lg">
+              Monitor activity, manage reports, and keep the community safe. Here's your overview.
             </p>
           </div>
         </div>
 
         {/* Stats */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatCard icon={Flag} label="Pending Reports" value={pendingReportsCount} iconClassName="text-destructive" />
-          <StatCard icon={AlertTriangle} label="Reported Confessions" value={uniqueConfessions.size} iconClassName="text-accent" />
-          <StatCard icon={Users} label="Admin Users" value={admins?.length || 0} />
+          <StatCard icon={Flag} label="Pending Reports" value={pendingReportsCount} iconClassName="text-destructive" gradient="bg-gradient-to-br from-destructive to-destructive/50" />
+          <StatCard icon={AlertTriangle} label="Reported Confessions" value={uniqueConfessions.size} iconClassName="text-accent" gradient="bg-gradient-to-br from-accent to-accent/50" />
+          <StatCard icon={Users} label="Admin Users" value={admins?.length || 0} gradient="bg-gradient-to-br from-primary to-secondary" />
         </div>
 
         {/* Analytics */}
-        <ConfessionTrendsChart />
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-bold uppercase tracking-[0.1em] text-muted-foreground">Analytics</h2>
+          </div>
+          <ConfessionTrendsChart />
+        </div>
 
         {/* Reports */}
-        <Card className="border-border/50">
-          <CardHeader>
+        <Card className="border-border/30 shadow-sm overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-destructive/[0.03] to-transparent">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-destructive/10 flex items-center justify-center">
-                <Flag className="h-4 w-4 text-destructive" />
+              <div className="h-10 w-10 rounded-2xl bg-destructive/10 flex items-center justify-center">
+                <Flag className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <CardTitle className="text-lg">Reported Confessions</CardTitle>
-                <CardDescription className="text-xs">Review and moderate reported content</CardDescription>
+                <CardTitle className="text-lg font-bold">Reported Confessions</CardTitle>
+                <CardDescription className="text-xs">Review and moderate flagged content</CardDescription>
               </div>
+              {pendingReportsCount > 0 && (
+                <Badge variant="destructive" className="ml-auto text-xs font-bold rounded-xl">
+                  {pendingReportsCount} pending
+                </Badge>
+              )}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6">
             {reportsLoading ? (
               <div className="flex items-center justify-center py-16">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -442,20 +482,20 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Admin Management */}
-        <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="border-border/30 shadow-sm overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-primary/[0.03] to-transparent">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Users className="h-4 w-4 text-primary" />
+              <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg">Admin Users</CardTitle>
+                <CardTitle className="text-lg font-bold">Admin Users</CardTitle>
                 <CardDescription className="text-xs">Manage who has admin access</CardDescription>
               </div>
             </div>
             <Dialog open={isAddAdminOpen} onOpenChange={setIsAddAdminOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="gap-2 rounded-xl">
+                <Button size="sm" className="gap-2 rounded-xl shadow-sm shadow-primary/20">
                   <UserPlus className="h-4 w-4" />
                   Add Admin
                 </Button>
