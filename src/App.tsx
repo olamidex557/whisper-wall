@@ -12,6 +12,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import NotFound from "./pages/NotFound";
 import SecurityStatus from "./pages/SecurityStatus";
+import Install from "./pages/Install";
 import { TrustBadge } from "./components/TrustBadge";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/guidelines" element={<CommunityGuidelines />} />
           <Route path="/security" element={<SecurityStatus />} />
+          <Route path="/install" element={<Install />} />
           <Route path="/admin" element={<AdminAuth />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
