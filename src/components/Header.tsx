@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Download } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { NotificationBell } from './NotificationBell';
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,17 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="rounded-full h-9 gap-1.5 text-muted-foreground hover:text-foreground"
+          >
+            <Link to="/install">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline text-xs">Install</span>
+            </Link>
+          </Button>
           <Button
             variant="ghost"
             size="icon"
