@@ -98,6 +98,13 @@ export type Database = {
             referencedRelation: "confessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       reports: {
@@ -128,6 +135,13 @@ export type Database = {
             columns: ["confession_id"]
             isOneToOne: false
             referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
             referencedColumns: ["id"]
           },
         ]
@@ -180,11 +194,119 @@ export type Database = {
             referencedRelation: "confessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "votes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      confessions_public: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          downvotes: number | null
+          id: string | null
+          is_approved: boolean | null
+          tag: Database["public"]["Enums"]["confession_tag"] | null
+          upvotes: number | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string | null
+          is_approved?: boolean | null
+          tag?: Database["public"]["Enums"]["confession_tag"] | null
+          upvotes?: number | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string | null
+          is_approved?: boolean | null
+          tag?: Database["public"]["Enums"]["confession_tag"] | null
+          upvotes?: number | null
+        }
+        Relationships: []
+      }
+      replies_public: {
+        Row: {
+          confession_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+        }
+        Insert: {
+          confession_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+        }
+        Update: {
+          confession_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      votes_public: {
+        Row: {
+          confession_id: string | null
+          created_at: string | null
+          id: string | null
+          vote_type: string | null
+        }
+        Insert: {
+          confession_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          vote_type?: string | null
+        }
+        Update: {
+          confession_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          vote_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_user_email_by_id: { Args: { user_id_input: string }; Returns: string }

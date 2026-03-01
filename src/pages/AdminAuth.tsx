@@ -18,14 +18,26 @@ export default function AdminAuth() {
   const [password, setPassword] = useState('');
   const [isResetting, setIsResetting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
+    // Rate limiting check
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const secondsLeft = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      toast({ title: 'Too many attempts', description: `Please wait ${secondsLeft} seconds before trying again.`, variant: 'destructive' });
+      return;
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !password) return;
+
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: trimmedEmail,
         password,
       });
 
@@ -56,8 +68,16 @@ export default function AdminAuth() {
         description: 'You have been logged in successfully.',
       });
 
+      setLoginAttempts(0);
+      setLockoutUntil(null);
       navigate('/admin/dashboard');
     } catch (error: any) {
+      const newAttempts = loginAttempts + 1;
+      setLoginAttempts(newAttempts);
+      if (newAttempts >= 5) {
+        setLockoutUntil(Date.now() + 30000);
+        setLoginAttempts(0);
+      }
       toast({
         title: 'Login failed',
         description: error.message,
@@ -178,7 +198,7 @@ export default function AdminAuth() {
                       setIsResetting(true);
                       try {
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                          redirectTo: `${window.location.origin}/admin`,
+                          redirectTo: `${window.location.origin}/reset-password`,
                         });
                         if (error) throw error;
                         toast({ title: 'Reset email sent', description: 'Check your inbox for the password reset link.' });
