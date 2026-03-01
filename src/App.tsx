@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPassword from "./pages/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/install" element={<Install />} />
           <Route path="/admin" element={<AdminAuth />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <TrustBadge />
