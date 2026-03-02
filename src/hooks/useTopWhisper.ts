@@ -11,7 +11,7 @@ export function useTopWhisper() {
 
       // Get confessions from the last 7 days
       const { data: confessions, error } = await supabase
-        .from('confessions')
+        .from('confessions_public')
         .select('*')
         .eq('is_approved', true)
         .gte('created_at', oneWeekAgo.toISOString())
@@ -24,7 +24,7 @@ export function useTopWhisper() {
       // Get reply counts for these confessions
       const ids = confessions.map(c => c.id);
       const { data: replies } = await supabase
-        .from('replies')
+        .from('replies_public')
         .select('confession_id')
         .in('confession_id', ids);
 
