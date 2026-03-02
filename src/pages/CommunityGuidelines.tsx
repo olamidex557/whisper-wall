@@ -88,7 +88,7 @@ const CommunityGuidelines = () => {
 
           <section className="space-y-4 border-t border-border pt-6">
             <p className="text-muted-foreground leading-relaxed text-sm">
-              By using Confess, you agree to follow these guidelines. Repeated violations may result in rate-limiting or other restrictions. For full details, see our{" "}
+              By using Whisper Wall, you agree to follow these guidelines. Repeated violations may result in rate-limiting or other restrictions. For full details, see our{" "}
               <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>.
             </p>
           </section>

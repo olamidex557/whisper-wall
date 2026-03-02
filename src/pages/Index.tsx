@@ -81,7 +81,7 @@ const Index = () => {
               </Link>
             </nav>
             <p className="mt-4 opacity-70">
-              © {new Date().getFullYear()} Confess. A safe space for anonymous expression.
+              © {new Date().getFullYear()} Whisper Wall. A safe space for anonymous expression.
             </p>
           </div>
         </footer>
