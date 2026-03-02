@@ -26,7 +26,7 @@ export function Hero() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-            A bold space to confess your deepest thoughts without judgment. 
+            A bold space to whisper your deepest thoughts without judgment. 
             No accounts, no tracking — just raw, honest expression.
           </p>
 

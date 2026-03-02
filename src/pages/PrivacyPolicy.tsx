@@ -25,7 +25,7 @@ const PrivacyPolicy = () => {
               <h2 className="text-xl font-semibold text-foreground">Our Commitment to Privacy</h2>
             </div>
             <p className="text-muted-foreground leading-relaxed">
-              Confess is designed with privacy as a core principle. We believe everyone should be able to share their thoughts anonymously without fear of being tracked or identified. This policy explains how we handle data on our platform.
+              Whisper Wall is designed with privacy as a core principle. We believe everyone should be able to share their thoughts anonymously without fear of being tracked or identified. This policy explains how we handle data on our platform.
             </p>
           </section>
 
