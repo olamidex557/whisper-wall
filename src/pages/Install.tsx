@@ -56,10 +56,10 @@ const Install = () => {
             <Download className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Install Confess
+            Install Whisper Wall
           </h1>
           <p className="text-muted-foreground text-lg">
-            Add Confess to your home screen for quick access — no app store needed.
+            Add Whisper Wall to your home screen for quick access — no app store needed.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ const Install = () => {
               <CheckCircle className="w-16 h-16 text-primary" />
               <h2 className="text-xl font-semibold">Already Installed!</h2>
               <p className="text-muted-foreground text-center">
-                Confess is installed on your device. Open it from your home screen.
+                Whisper Wall is installed on your device. Open it from your home screen.
               </p>
             </CardContent>
           </Card>
@@ -79,7 +79,7 @@ const Install = () => {
               <Smartphone className="w-12 h-12 text-primary" />
               <h2 className="text-xl font-semibold">Ready to Install</h2>
               <p className="text-muted-foreground text-center">
-                Install Confess for a faster, app-like experience.
+                Install Whisper Wall for a faster, app-like experience.
               </p>
               <Button size="lg" onClick={handleInstall} className="gap-2">
                 <Download className="w-5 h-5" />
@@ -120,7 +120,7 @@ const Install = () => {
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">2</span>
-                  <p className="pt-1">Select <strong>"Install Confess"</strong> or <strong>"Add to Home Screen"</strong></p>
+                  <p className="pt-1">Select <strong>"Install Whisper Wall"</strong> or <strong>"Add to Home Screen"</strong></p>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">3</span>
