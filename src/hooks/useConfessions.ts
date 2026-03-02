@@ -37,7 +37,7 @@ export function useConfessions(sortBy: SortType = 'newest', searchQuery: string 
     queryKey: ['confessions', sortBy, searchQuery, tagFilter],
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
-        .from('confessions')
+        .from('confessions_public')
         .select('*')
         .eq('is_approved', true)
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
