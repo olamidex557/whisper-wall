@@ -35,7 +35,7 @@ export function useReplies(confessionId: string) {
     queryKey: ['replies', confessionId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('replies')
+        .from('replies_public')
         .select('*')
         .eq('confession_id', confessionId)
         .order('created_at', { ascending: true });
