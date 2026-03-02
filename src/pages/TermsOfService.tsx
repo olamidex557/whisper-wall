@@ -25,7 +25,7 @@ const TermsOfService = () => {
               <h2 className="text-xl font-semibold text-foreground">Acceptance of Terms</h2>
             </div>
             <p className="text-muted-foreground leading-relaxed">
-              By accessing and using Confess, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our platform.
+              By accessing and using Whisper Wall, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our platform.
             </p>
           </section>
 
@@ -35,7 +35,7 @@ const TermsOfService = () => {
               <h2 className="text-xl font-semibold text-foreground">Platform Description</h2>
             </div>
             <p className="text-muted-foreground leading-relaxed">
-              Confess is an anonymous confession platform that allows users to share thoughts, feelings, and experiences without creating an account. All confessions are public and visible to everyone who visits the site.
+              Whisper Wall is an anonymous confession platform that allows users to share thoughts, feelings, and experiences without creating an account. All confessions are public and visible to everyone who visits the site.
             </p>
           </section>
 
@@ -112,7 +112,7 @@ const TermsOfService = () => {
             </div>
             <div className="space-y-4 text-muted-foreground">
               <p className="leading-relaxed">
-                <strong className="text-foreground">No Warranty:</strong> Confess is provided "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or reliability of any content posted by users.
+                <strong className="text-foreground">No Warranty:</strong> Whisper Wall is provided "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or reliability of any content posted by users.
               </p>
               <p className="leading-relaxed">
                 <strong className="text-foreground">User Responsibility:</strong> You are solely responsible for the content you post. By submitting a confession, you affirm that it does not violate these terms or any applicable laws.
