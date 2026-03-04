@@ -16,8 +16,8 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "Confess - Anonymous Confession Wall",
-        short_name: "Confess",
+        name: "whisper wall - Anonymous Confession Wall",
+        short_name: "whisper-wall",
         description: "Share your deepest secrets anonymously. A safe space for honest expression.",
         theme_color: "#1a1a2e",
         background_color: "#1a1a2e",
