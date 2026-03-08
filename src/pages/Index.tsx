@@ -1,17 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { CreateConfession } from '@/components/CreateConfession';
 import { ConfessionFeed } from '@/components/ConfessionFeed';
 import { TopWhisper } from '@/components/TopWhisper';
+import { NotificationPrimer } from '@/components/NotificationPrimer';
 import { Link } from 'react-router-dom';
 import { useBookmarks } from '@/hooks/useBookmarks';
+import { useNotifications } from '@/hooks/useNotifications';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Bookmark, MessageSquare } from 'lucide-react';
+
+const AUTO_PRIMER_KEY = 'confess_auto_primer_shown';
 
 const Index = () => {
   const { bookmarkedIds, toggle, isBookmarked } = useBookmarks();
   const [feedView, setFeedView] = useState<'all' | 'saved'>('all');
+  const [showAutoPrimer, setShowAutoPrimer] = useState(false);
+  const { enablePushNotifications, pushSupported, pushEnabled } = useNotifications();
+
+  useEffect(() => {
+    const alreadyShown = localStorage.getItem(AUTO_PRIMER_KEY) === 'true';
+    const permissionGranted = 'Notification' in window && Notification.permission === 'granted';
+    if (alreadyShown || permissionGranted || !pushSupported) return;
+
+    const timer = setTimeout(() => setShowAutoPrimer(true), 30000);
+    return () => clearTimeout(timer);
+  }, [pushSupported]);
 
   return (
     <div className="min-h-screen bg-background" role="document">
