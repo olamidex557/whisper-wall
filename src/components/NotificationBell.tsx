@@ -100,7 +100,18 @@ export function NotificationBell() {
                 <Button
                   variant={pushEnabled ? 'outline' : 'default'}
                   size="sm"
-                  onClick={pushEnabled ? disablePushNotifications : enablePushNotifications}
+                  onClick={() => {
+                    if (pushEnabled) {
+                      disablePushNotifications();
+                    } else {
+                      const dismissed = localStorage.getItem(PRIMER_DISMISSED_KEY);
+                      if (Notification.permission === 'granted' || dismissed === 'true') {
+                        enablePushNotifications();
+                      } else {
+                        setShowPrimer(true);
+                      }
+                    }
+                  }}
                   className={cn(
                     'gap-2',
                     pushEnabled && 'border-destructive text-destructive hover:bg-destructive/10'
@@ -123,6 +134,19 @@ export function NotificationBell() {
           )}
         </div>
       </PopoverContent>
+
+      <NotificationPrimer
+        open={showPrimer}
+        onAccept={async () => {
+          setShowPrimer(false);
+          localStorage.setItem(PRIMER_DISMISSED_KEY, 'true');
+          await enablePushNotifications();
+        }}
+        onDismiss={() => {
+          setShowPrimer(false);
+          localStorage.setItem(PRIMER_DISMISSED_KEY, 'true');
+        }}
+      />
     </Popover>
   );
 }
