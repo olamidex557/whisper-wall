@@ -101,6 +101,19 @@ const Index = () => {
           </div>
         </footer>
       </div>
+
+      <NotificationPrimer
+        open={showAutoPrimer}
+        onAccept={async () => {
+          setShowAutoPrimer(false);
+          localStorage.setItem(AUTO_PRIMER_KEY, 'true');
+          await enablePushNotifications();
+        }}
+        onDismiss={() => {
+          setShowAutoPrimer(false);
+          localStorage.setItem(AUTO_PRIMER_KEY, 'true');
+        }}
+      />
     </div>
   );
 };
