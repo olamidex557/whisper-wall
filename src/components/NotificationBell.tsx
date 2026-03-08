@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Bell, BellOff, BellRing, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,11 +8,15 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationPrimer } from '@/components/NotificationPrimer';
 import { TAG_LABELS } from '@/types/confession';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
+const PRIMER_DISMISSED_KEY = 'confess_notification_primer_dismissed';
+
 export function NotificationBell() {
+  const [showPrimer, setShowPrimer] = useState(false);
   const {
     newConfessionsCount,
     recentConfessions,
