@@ -1,73 +1,151 @@
-# Welcome to your Lovable project
+# Whisper Wall
 
-## Project info
+Whisper Wall is an anonymous expression platform where people can share thoughts freely without revealing their identity.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+The goal of Whisper Wall is to provide a simple and safe space for honest expression. Users can post messages anonymously and read thoughts shared by others without creating accounts or exposing personal information.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Live Demo
 
-**Use Lovable**
+https://whisper-wall-theta.vercel.app
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Problem
 
-**Use your preferred IDE**
+Many platforms require users to reveal their identity before sharing their thoughts. This often discourages honest expression and open communication.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Whisper Wall removes that barrier by allowing users to post messages anonymously while still maintaining a clean and structured experience.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Features
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* Anonymous message posting
+* Clean and minimal user interface
+* Responsive design for mobile and desktop
+* Fast data storage and retrieval
+* No account required to participate
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Tech Stack
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Frontend
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+
+Backend / Database
+
+* Supabase
+
+Deployment
+
+* Vercel
+
+---
+
+## How It Works
+
+1. A user writes a message.
+2. The message is submitted anonymously.
+3. The message is stored securely in Supabase.
+4. Messages are displayed on the wall for others to read.
+
+No user identity or authentication is required, keeping the experience simple and anonymous.
+
+---
+
+## Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/whisper-wall.git
+```
+
+Move into the project directory
+
+```bash
+cd whisper-wall
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Start the development server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The project will run locally at
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+http://localhost:3000
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Environment Variables
 
-## What technologies are used for this project?
+Create a `.env.local` file and add your Supabase credentials:
 
-This project is built with:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+These keys allow the application to connect to the Supabase backend.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Project Structure
 
-## Can I connect a custom domain to my Lovable project?
+```
+app/
+components/
+lib/
+public/
+styles/
+```
 
-Yes, you can!
+* **app** – application routes and pages
+* **components** – reusable UI components
+* **lib** – utility functions and Supabase configuration
+* **public** – static assets and images
+* **styles** – global styling
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Future Improvements
+
+* Message moderation tools
+* Reaction system (likes or hearts)
+* Search or filtering
+* Dark/light theme toggle
+* Report inappropriate posts
+
+---
+
+## Author
+
+Idowu Abdulquadri Olamide
+
+Computer Science Student
+Afe Babalola University
+
+Email
+[idowuabdulquadri7@gmail.com](mailto:idowuabdulquadri7@gmail.com)
+
+---
+
+## License
+
+This project is open source and available under the MIT License.
