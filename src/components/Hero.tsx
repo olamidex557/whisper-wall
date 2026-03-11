@@ -26,7 +26,7 @@ export function Hero() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-            A bold space to whisper your deepest thoughts without judgment. 
+            A bold space to whisper your deepest thoughts . 
             No accounts, no tracking — just raw, honest expression.
           </p>
 
@@ -38,11 +38,11 @@ export function Hero() {
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm">
               <Lock className="h-4 w-4 text-secondary" />
-              <span className="text-foreground font-medium">Encrypted</span>
+              <span className="text-foreground font-medium">Encrypted🔒</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm">
               <EyeOff className="h-4 w-4 text-accent" />
-              <span className="text-foreground font-medium">Zero tracking</span>
+              <span className="text-foreground font-medium">Zero tracking🚫</span>
             </div>
           </div>
         </div>
