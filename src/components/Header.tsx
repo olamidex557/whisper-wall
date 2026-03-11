@@ -22,7 +22,7 @@ export function Header() {
       clearTimeout(clickTimer.current);
     }
 
-    if (newCount >= 3) {
+    if (newCount >= 5) {
       setClickCount(0);
       navigate('/admin');
       return;
