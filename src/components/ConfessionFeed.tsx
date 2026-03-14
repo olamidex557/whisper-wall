@@ -18,17 +18,6 @@ import { cn } from '@/lib/utils';
 
 type SortType = 'trending' | 'newest';
 
-const TAG_FILTER_STYLES: Record<string, string> = {
-  love: 'bg-pink-500/20 text-pink-400 border-pink-500/30 hover:bg-pink-500/30',
-  regret: 'bg-amber-500/20 text-amber-400 border-amber-500/30 hover:bg-amber-500/30',
-  secret: 'bg-purple-500/20 text-purple-400 border-purple-500/30 hover:bg-purple-500/30',
-  funny: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30',
-  work: 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30',
-  family: 'bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30',
-  friendship: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/30',
-  other: 'bg-muted/50 text-muted-foreground border-border hover:bg-muted/70',
-};
-
 interface ConfessionFeedProps {
   bookmarkedIds?: string[];
   showBookmarkedOnly?: boolean;
@@ -42,7 +31,6 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
   const [searchQuery, setSearchQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<ConfessionTag | null>(null);
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => setSearchQuery(searchInput), 400);
     return () => clearTimeout(timer);
@@ -69,33 +57,32 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <form onSubmit={handleSearch} className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search confessions..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="pl-11 h-12 bg-card/50 border-border/50 focus:border-primary/50 rounded-xl"
+            className="pl-10 h-10"
           />
         </form>
 
-        <div className="flex flex-wrap gap-3 items-center justify-between">
+        <div className="flex flex-wrap gap-2 items-center justify-between">
           <Tabs value={sortBy} onValueChange={(v) => setSortBy(v as SortType)}>
-            <TabsList className="bg-card/50 border border-border/50 p-1">
+            <TabsList className="bg-muted/50 p-1">
               <TabsTrigger 
                 value="trending" 
-                className="gap-2 data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg"
+                className="gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
               >
-                <TrendingUp className="h-4 w-4" />
+                <TrendingUp className="h-3.5 w-3.5" />
                 Trending
               </TabsTrigger>
               <TabsTrigger 
                 value="newest" 
-                className="gap-2 data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg"
+                className="gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
               >
-                <Clock className="h-4 w-4" />
+                <Clock className="h-3.5 w-3.5" />
                 Newest
               </TabsTrigger>
             </TabsList>
@@ -105,24 +92,21 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className={cn(
-                  'gap-2 border-border/50 bg-card/50 hover:bg-card',
-                  tagFilter && TAG_FILTER_STYLES[tagFilter]
-                )}
+                size="sm"
+                className="gap-1.5 text-xs h-9"
               >
-                <Filter className="h-4 w-4" />
+                <Filter className="h-3.5 w-3.5" />
                 {tagFilter ? TAG_LABELS[tagFilter] : 'All Tags'}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-card border-border/50">
-              <DropdownMenuItem onClick={() => setTagFilter(null)} className="focus:bg-primary/10">
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem onClick={() => setTagFilter(null)}>
                 All Tags
               </DropdownMenuItem>
               {(Object.entries(TAG_LABELS) as [ConfessionTag, string][]).map(([value, label]) => (
                 <DropdownMenuItem 
                   key={value} 
                   onClick={() => setTagFilter(value)}
-                  className="focus:bg-primary/10"
                 >
                   {label}
                 </DropdownMenuItem>
@@ -132,14 +116,13 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
         </div>
       </div>
 
-      {/* Active Filters */}
       {(searchInput || tagFilter) && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-muted-foreground">Active filters:</span>
+          <span className="text-xs text-muted-foreground">Filters:</span>
           {searchInput && (
             <Badge 
               variant="secondary" 
-              className="cursor-pointer bg-secondary/20 text-secondary hover:bg-secondary/30 border border-secondary/30"
+              className="cursor-pointer text-xs"
               onClick={() => { setSearchInput(''); setSearchQuery(''); }}
             >
               "{searchInput}" ×
@@ -148,7 +131,7 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
           {tagFilter && (
             <Badge 
               variant="outline"
-              className={cn('cursor-pointer border', TAG_FILTER_STYLES[tagFilter])}
+              className="cursor-pointer text-xs"
               onClick={() => setTagFilter(null)}
             >
               {TAG_LABELS[tagFilter]} ×
@@ -157,16 +140,15 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
         </div>
       )}
 
-      {/* Confessions List */}
       {isLoading ? (
         <ConfessionFeedSkeleton count={4} />
       ) : error ? (
         <div className="text-center py-16">
-          <p className="text-destructive font-medium">Failed to load confessions.</p>
-          <p className="text-muted-foreground text-sm mt-1">Please try again later.</p>
+          <p className="text-destructive text-sm font-medium">Failed to load confessions.</p>
+          <p className="text-muted-foreground text-xs mt-1">Please try again later.</p>
         </div>
       ) : confessions.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {confessions.map((confession) => (
             <ConfessionCard
               key={confession.id}
@@ -178,12 +160,12 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
           ))}
           
           {hasNextPage && (
-            <div className="flex justify-center pt-6">
+            <div className="flex justify-center pt-4">
               <Button
                 variant="outline"
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="gap-2 px-8 h-12 rounded-xl bg-card/50 border-border/50 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all"
+                className="gap-2 text-sm h-10"
               >
                 {isFetchingNextPage ? (
                   <>
@@ -191,48 +173,25 @@ export function ConfessionFeed({ bookmarkedIds, showBookmarkedOnly, onToggleBook
                     Loading...
                   </>
                 ) : (
-                  'Load More Confessions'
+                  'Load More'
                 )}
               </Button>
             </div>
           )}
         </div>
       ) : (
-      <div className="text-center py-16 space-y-6">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto animate-pulse">
-            <span className="text-4xl">{showBookmarkedOnly ? '🔖' : '🤫'}</span>
-          </div>
+        <div className="text-center py-20 space-y-4">
+          <p className="text-4xl">{showBookmarkedOnly ? '🔖' : '🤫'}</p>
           <div>
-            <h3 className="text-xl font-bold text-foreground mb-2">
-              {showBookmarkedOnly ? 'No Saved Confessions Yet' : 'The Wall is Empty...'}
+            <h3 className="font-display text-xl text-foreground mb-1">
+              {showBookmarkedOnly ? 'No saved confessions yet' : 'The wall is empty...'}
             </h3>
-            <p className="text-muted-foreground max-w-sm mx-auto">
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
               {showBookmarkedOnly 
-                ? 'Tap the bookmark icon on any confession to save it here for later.'
-                : 'This is a safe space for anonymous expression. No accounts, no tracking — just honest words.'}
+                ? 'Tap the bookmark icon on any confession to save it here.'
+                : 'Be the first to share what\'s on your mind. Your identity stays completely anonymous.'}
             </p>
           </div>
-          {!showBookmarkedOnly && (
-            <div className="flex flex-col items-center gap-3 pt-2">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-primary" />
-                  100% Anonymous
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-accent" />
-                  No Sign-up
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-secondary" />
-                  Zero Tracking
-                </span>
-              </div>
-              <p className="text-sm font-medium text-primary">
-                ↑ Scroll up and be the first to confess
-              </p>
-            </div>
-          )}
         </div>
       )}
     </div>

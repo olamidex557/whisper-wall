@@ -33,13 +33,13 @@ interface ConfessionCardProps {
 }
 
 const TAG_STYLES: Record<string, string> = {
-  love: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-  regret: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  secret: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-  funny: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  work: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  family: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  friendship: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  love: 'bg-accent/10 text-accent border-accent/20',
+  regret: 'bg-primary/10 text-primary border-primary/20',
+  secret: 'bg-secondary/10 text-secondary border-secondary/20',
+  funny: 'bg-secondary/10 text-secondary border-secondary/20',
+  work: 'bg-primary/10 text-primary border-primary/20',
+  family: 'bg-accent/10 text-accent border-accent/20',
+  friendship: 'bg-secondary/10 text-secondary border-secondary/20',
   other: 'bg-muted text-muted-foreground border-border',
 };
 
@@ -94,15 +94,12 @@ export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBoo
 
   return (
     <>
-      <Card className="group relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-        {/* Subtle glow on hover */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
-        <CardContent className="p-6 relative">
-          <div className="flex items-start justify-between gap-4 mb-4">
+      <Card className="border-border hover:border-primary/20 transition-colors duration-200">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between gap-4 mb-3">
             <Badge 
               variant="outline" 
-              className={cn('text-xs font-semibold border', TAG_STYLES[confession.tag])}
+              className={cn('text-xs font-medium border', TAG_STYLES[confession.tag])}
             >
               {TAG_LABELS[confession.tag]}
             </Badge>
@@ -111,25 +108,25 @@ export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBoo
             </span>
           </div>
 
-          <p className="text-foreground leading-relaxed mb-6 whitespace-pre-wrap text-base">
+          <p className="text-foreground leading-relaxed mb-5 whitespace-pre-wrap">
             {confession.content}
           </p>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleVote('up')}
                 className={cn(
-                  'gap-1.5 rounded-full transition-all duration-200',
+                  'gap-1 rounded-full h-8 px-2.5 text-xs',
                   userVote === 'up' 
-                    ? 'text-primary bg-primary/20 hover:bg-primary/30' 
-                    : 'hover:bg-primary/10 hover:text-primary'
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-muted-foreground hover:text-primary'
                 )}
               >
-                <ThumbsUp className="h-4 w-4" />
-                <span className="font-medium">{confession.upvotes}</span>
+                <ThumbsUp className="h-3.5 w-3.5" />
+                <span>{confession.upvotes}</span>
               </Button>
 
               <Button
@@ -137,61 +134,61 @@ export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBoo
                 size="sm"
                 onClick={() => handleVote('down')}
                 className={cn(
-                  'gap-1.5 rounded-full transition-all duration-200',
+                  'gap-1 rounded-full h-8 px-2.5 text-xs',
                   userVote === 'down' 
-                    ? 'text-destructive bg-destructive/20 hover:bg-destructive/30' 
-                    : 'hover:bg-destructive/10 hover:text-destructive'
+                    ? 'text-destructive bg-destructive/10' 
+                    : 'text-muted-foreground hover:text-destructive'
                 )}
               >
-                <ThumbsDown className="h-4 w-4" />
-                <span className="font-medium">{confession.downvotes}</span>
+                <ThumbsDown className="h-3.5 w-3.5" />
+                <span>{confession.downvotes}</span>
               </Button>
 
-              <div className={cn(
-                'text-sm font-bold px-3 py-1 rounded-full ml-1',
-                score > 0 && 'text-primary bg-primary/10',
-                score < 0 && 'text-destructive bg-destructive/10',
-                score === 0 && 'text-muted-foreground bg-muted/50'
+              <span className={cn(
+                'text-xs font-semibold px-2 py-0.5 rounded-full ml-1',
+                score > 0 && 'text-primary',
+                score < 0 && 'text-destructive',
+                score === 0 && 'text-muted-foreground'
               )}>
                 {score > 0 ? '+' : ''}{score}
-              </div>
+              </span>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onToggleBookmark?.(confession.id)}
                 className={cn(
-                  'rounded-full transition-all duration-200',
+                  'rounded-full h-8 w-8 p-0',
                   isBookmarked
-                    ? 'text-primary bg-primary/20 hover:bg-primary/30'
-                    : 'hover:bg-primary/10 hover:text-primary'
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-primary'
                 )}
                 aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
               >
-                {isBookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                {isBookmarked ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className="rounded-full hover:bg-secondary/10 hover:text-secondary"
+                className="rounded-full h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-3.5 w-3.5" />
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="rounded-full">
-                    <MoreHorizontal className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="rounded-full h-8 w-8 p-0 text-muted-foreground">
+                    <MoreHorizontal className="h-3.5 w-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-card border-border/50">
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem 
                     onClick={() => setReportDialogOpen(true)}
-                    className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                    className="text-destructive focus:text-destructive"
                   >
                     <Flag className="h-4 w-4 mr-2" />
                     Report
@@ -206,10 +203,10 @@ export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBoo
       </Card>
 
       <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-        <DialogContent className="bg-card border-border/50">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-foreground">Report Confession</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
+            <DialogTitle className="font-display text-xl">Report Confession</DialogTitle>
+            <DialogDescription>
               Help us keep the community safe. Please describe why this confession violates our guidelines.
             </DialogDescription>
           </DialogHeader>
@@ -218,11 +215,11 @@ export function ConfessionCard({ confession, userVote, isBookmarked, onToggleBoo
             placeholder="Describe the issue..."
             value={reportReason}
             onChange={(e) => setReportReason(e.target.value)}
-            className="min-h-[100px] bg-background/50 border-border/50"
+            className="min-h-[100px]"
           />
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setReportDialogOpen(false)} className="border-border/50">
+            <Button variant="outline" onClick={() => setReportDialogOpen(false)}>
               Cancel
             </Button>
             <Button 

@@ -16,9 +16,9 @@ const COLORS = [
   'hsl(var(--primary))',
   'hsl(var(--accent))',
   'hsl(var(--secondary))',
-  'hsl(280, 80%, 65%)',
-  'hsl(330, 80%, 65%)',
-  'hsl(200, 80%, 65%)',
+  'hsl(36, 75%, 65%)',
+  'hsl(350, 40%, 65%)',
+  'hsl(150, 20%, 55%)',
 ];
 
 export function ConfettiCelebration({ show, onComplete }: { show: boolean; onComplete: () => void }) {
