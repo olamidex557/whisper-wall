@@ -44,51 +44,53 @@ export function TrustBadge() {
 
   return (
     <>
+      {/* Floating Trust Badge Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 shadow-md transition-all hover:shadow-lg"
+        className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full border border-border/50 bg-card/90 px-4 py-2.5 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:shadow-xl group"
         aria-label="View security status"
       >
         <div className="relative">
-          <Shield className="h-4 w-4 text-primary" />
+          <Shield className="h-5 w-5 text-primary" />
           <span
-            className={`absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full ${
-              allSecure ? 'bg-secondary' : 'bg-primary'
-            }`}
+            className={`absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ${
+              allSecure ? 'bg-green-500' : 'bg-yellow-500'
+            } animate-pulse`}
           />
         </div>
-        <span className="text-xs font-medium text-foreground hidden sm:inline">
+        <span className="text-xs font-semibold text-foreground hidden sm:inline">
           {allSecure ? 'Secure' : 'Check Status'}
         </span>
       </button>
 
+      {/* Security Panel */}
       {isOpen && (
-        <div className="fixed bottom-16 left-6 z-50 w-72 rounded-lg border border-border bg-card shadow-lg animate-in slide-in-from-bottom-4 fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-border p-3">
+        <div className="fixed bottom-20 left-6 z-50 w-80 rounded-xl border border-border/50 bg-card shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <div className="flex items-center justify-between border-b border-border/30 p-4">
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-primary" />
-              <h3 className="text-xs font-semibold text-foreground">Security Status</h3>
+              <Shield className="h-5 w-5 text-primary" />
+              <h3 className="text-sm font-bold text-foreground">Security Status</h3>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="rounded-full p-1 text-muted-foreground hover:text-foreground transition-colors"
+              className="rounded-full p-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="p-3 space-y-2">
+          <div className="p-4 space-y-3">
             {checks.map((check) => (
               <div
                 key={check.label}
-                className="flex items-start gap-2.5 rounded-md bg-muted/30 p-2.5"
+                className="flex items-start gap-3 rounded-lg bg-muted/30 p-3"
               >
                 <div
                   className={`mt-0.5 ${
                     check.status === 'secure'
-                      ? 'text-secondary'
+                      ? 'text-green-500'
                       : check.status === 'warning'
-                      ? 'text-primary'
+                      ? 'text-yellow-500'
                       : 'text-muted-foreground'
                   }`}
                 >
@@ -96,7 +98,7 @@ export function TrustBadge() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-foreground">
+                    <span className="text-xs font-semibold text-foreground">
                       {check.label}
                     </span>
                     <Badge
@@ -114,7 +116,7 @@ export function TrustBadge() {
             ))}
           </div>
 
-          <div className="border-t border-border p-2.5 flex items-center justify-between">
+          <div className="border-t border-border/30 p-3 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">
               Last checked: just now
             </span>

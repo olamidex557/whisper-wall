@@ -9,7 +9,7 @@ import logoImage from '@/assets/logo.png';
 export function Header() {
   const navigate = useNavigate();
   const [clickCount, setClickCount] = useState(0);
-  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clickTimer = useRef<NodeJS.Timeout | null>(null);
   const { theme, setTheme } = useTheme();
 
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -34,14 +34,14 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-lg">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 group">
-          <img src={logoImage} alt="Whisper Wall logo" className="h-8 w-8 rounded-lg" />
-          <span className="font-display text-xl text-foreground">Whisper Wall</span>
+    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/60 backdrop-blur-xl">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 group">
+          <img src={logoImage} alt="Whisper Wall logo" className="h-9 w-9 rounded-xl group-hover:scale-105 transition-transform duration-300" />
+          <span className="font-bold text-xl gradient-text">Whisper Wall</span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"

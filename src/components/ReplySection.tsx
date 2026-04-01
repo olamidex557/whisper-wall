@@ -36,16 +36,16 @@ export function ReplySection({ confessionId }: ReplySectionProps) {
   const replyCount = replies?.length ?? 0;
 
   return (
-    <div className="border-t border-border pt-3 mt-4">
+    <div className="border-t border-border/30 pt-4 mt-4">
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground rounded-full h-8"
+          className="gap-2 text-muted-foreground hover:text-foreground hover:bg-secondary/10 rounded-full"
         >
-          <MessageCircle className="h-3.5 w-3.5" />
-          <span>{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}</span>
+          <MessageCircle className="h-4 w-4" />
+          <span className="font-medium">{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}</span>
           {replyCount > 0 && (
             isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
           )}
@@ -58,19 +58,19 @@ export function ReplySection({ confessionId }: ReplySectionProps) {
             setShowReplyForm(!showReplyForm);
             if (!showReplyForm) setIsExpanded(true);
           }}
-          className="text-xs text-muted-foreground hover:text-primary rounded-full h-8"
+          className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
         >
           Reply
         </Button>
       </div>
 
       {showReplyForm && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 space-y-3">
           <Textarea
             placeholder="Write an anonymous reply..."
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
-            className="min-h-[80px] resize-none text-sm"
+            className="min-h-[80px] resize-none bg-background/50 border-border/50 focus:border-primary/50"
             maxLength={500}
           />
           <div className="flex items-center justify-between">
@@ -88,7 +88,7 @@ export function ReplySection({ confessionId }: ReplySectionProps) {
                   setShowReplyForm(false);
                   setReplyContent('');
                 }}
-                className="rounded-full h-8 text-xs"
+                className="rounded-full"
               >
                 Cancel
               </Button>
@@ -96,7 +96,7 @@ export function ReplySection({ confessionId }: ReplySectionProps) {
                 size="sm"
                 onClick={handleSubmitReply}
                 disabled={!replyContent.trim() || createReply.isPending}
-                className="gap-1.5 rounded-full h-8 text-xs"
+                className="gap-2 rounded-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
                 <Send className="h-3 w-3" />
                 Send
@@ -107,25 +107,28 @@ export function ReplySection({ confessionId }: ReplySectionProps) {
       )}
 
       {isExpanded && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 space-y-3">
           {isLoading ? (
-            <div className="text-xs text-muted-foreground py-4 text-center">Loading replies...</div>
+            <div className="text-sm text-muted-foreground py-4 text-center">Loading replies...</div>
           ) : replies && replies.length > 0 ? (
             replies.map((reply) => (
               <div
                 key={reply.id}
-                className="pl-4 border-l-2 border-primary/30 py-2"
+                className={cn(
+                  "pl-4 border-l-2 border-primary/40",
+                  "bg-primary/5 rounded-r-xl p-4"
+                )}
               >
                 <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {reply.content}
                 </p>
-                <span className="text-xs text-muted-foreground mt-1 block">
+                <span className="text-xs text-muted-foreground mt-2 block">
                   {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
                 </span>
               </div>
             ))
           ) : (
-            <div className="text-xs text-muted-foreground py-4 text-center">
+            <div className="text-sm text-muted-foreground py-4 text-center">
               No replies yet. Be the first to reply!
             </div>
           )}
