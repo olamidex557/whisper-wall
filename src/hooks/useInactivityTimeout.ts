@@ -13,8 +13,8 @@ export function useInactivityTimeout({
   warningMs = 60 * 1000,
 }: UseInactivityTimeoutOptions = {}) {
   const navigate = useNavigate();
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const warningRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const warningRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasWarnedRef = useRef(false);
 
   const handleLogout = useCallback(async () => {

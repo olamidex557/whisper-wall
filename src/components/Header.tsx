@@ -9,7 +9,7 @@ import logoImage from '@/assets/logo.png';
 export function Header() {
   const navigate = useNavigate();
   const [clickCount, setClickCount] = useState(0);
-  const clickTimer = useRef<NodeJS.Timeout | null>(null);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { theme, setTheme } = useTheme();
 
   const handleLogoClick = (e: React.MouseEvent) => {
