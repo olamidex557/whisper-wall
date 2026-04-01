@@ -86,7 +86,7 @@
 
     --shadow-glow-primary: 0 0 40px hsl(217 91% 65% / 0.3);
     --shadow-glow-secondary: 0 0 40px hsl(199 89% 60% / 0.3);
-    --shadow-glow-accent: 0 0 40px hsl(210 100% 70% / 0.3);
+    --shadow-glow-accent: 0 0 40px hsl(38 92% 60% / 0.3);
 
     --gradient-primary: linear-gradient(135deg, hsl(217 91% 65%), hsl(199 89% 60%));
     --gradient-secondary: linear-gradient(135deg, hsl(199 89% 60%), hsl(217 91% 65%));
